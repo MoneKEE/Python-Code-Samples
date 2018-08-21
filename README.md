@@ -11,4 +11,5 @@ produces the supplied output given the supplied input.
 
 ## LCS.py
 
+Determines the longest common string for two strings passsed as input to the function get_LCS_Length
 
