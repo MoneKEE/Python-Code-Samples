@@ -2,7 +2,6 @@
 # coding: utf-8
 
 def get_LCS_Length(s1,s2):
-#Takes two strings as input and returns their longest common string
 	m = len(s1)
 	n = len(s2)
 	
