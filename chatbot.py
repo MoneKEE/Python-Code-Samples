@@ -100,7 +100,7 @@ def response(user_response):
         return robo_response
 
 flag=True
-print("ROBO: My name is Robo.  I will answer your queries about Chatbots.  If you want exit, type Bye!")
+print("ROBO: My name is Robo.  I will answer your queries about Chatbots.  If you want to exit, type Bye!")
 
 while(flag==True):
     user_response=input()
