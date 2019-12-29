@@ -10,7 +10,7 @@ class MyCentralManagerDelegate (object):
 	def __init__(self):
 		self.peripheral = None
 		self.p_list = [['name','peripheral_id','state','service_id', 'is_primary', 'characteristic_id', 'value', 'notifying', 'properties']]
-	
+
 	def print_list(self,p):
 		print('********************************')
 		for row in self.p_list:
@@ -21,23 +21,26 @@ class MyCentralManagerDelegate (object):
 
 	def did_update_state(self):
 		pass
-	
+
 	def did_discover_peripheral(self, p):
 		p_uuids = [item[1] for item in self.p_list[1:]]
-		
+
 		if p.uuid not in p_uuids:
 			print('+++ Discovered peripheral: %s (%s)' % (p.name, p.uuid))
 			self.p_list.append([p.name,p.uuid,'','','','','','',''])
-			self.print_list(self.p_list)
+			#self.print_list(self.p_list)
 		#if p.name == p.name:	
 			self.peripheral = p
 			cb.connect_peripheral(self.peripheral)
 
 	def did_connect_peripheral(self, p):
+		clear()
 		print('*** Connected %s state: %s' % (p.name, p.state))
 		print('*** Discovering services for %s...' % p.name)
+		'''
 		index = [item[1] for item in self.p_list].index(p.uuid)
 		self.p_list[index][2] = p.state
+		'''
 		cb.stop_scan()
 		p.discover_services()
 
@@ -45,7 +48,7 @@ class MyCentralManagerDelegate (object):
 		print('+++ Failed to connect to %s' % p.name)
 		print('+++ Resuming scan...')
 		cb.scan_for_peripherals()
-		
+
 	def did_disconnect_peripheral(self, p, error):
 		print('*** Disconnected %s, error: %s' % (p.name, error,))
 		self.peripheral = None
@@ -53,13 +56,16 @@ class MyCentralManagerDelegate (object):
 		cb.scan_for_peripherals()
 
 	def did_discover_services(self, p, error):
+		'''
 		services_list = []
 		index = [item[1] for item in self.p_list].index(p.uuid)
+		'''
 		for s in p.services:
 			print('*** service id: %s / primary?: %s' % (s.uuid, s.primary))
 			print('*** Discovering characteristics...')
-			
+
 			#Update p_list with the discovered service info
+			'''
 			if s.uuid not in [item[3] for item in self.p_list if item[1] == p.uuid]:			
 				if self.p_list[index][3] == '':
 					self.p_list[index][3] = s.uuid
@@ -67,18 +73,24 @@ class MyCentralManagerDelegate (object):
 				else:
 					tmp_list = self.p_list[index]
 					self.p_list.insert(index+1,tmp_list[:3] + [s.uuid,s.primary] + ['','','',''])
-						
+					'''
+
 		#self.print_list(self.p_list)		
-				
-			#p.discover_characteristics(s)
+
+			p.discover_characteristics(s)
 
 	def did_discover_characteristics(self, s, error):
 		print('*** %s characteristics:' % s.uuid)
 		for c in s.characteristics:
-			#self.peripheral.read_characteristic_value(c)
+
+		#self.peripheral.read_characteristic_value(c)
 			#self.peripheral.set_notify_value(c, True)
 			print('*** 	characteristic id: %s / value: %s / notifying: %s / properties: %s' % (c.uuid, c.value, c.notifying, c.properties))
-			
+
+			if c.notifying == False:
+				#p.set_notify_value(c,flag=True)
+				print('notifying: %s ' % (c.notifying))
+
 			'''
 			if c.uuid not in [item[5] for item in self.p_list if item[3] == s.uuid]:			
 				if self.p_list[index][5] == '':
@@ -90,7 +102,7 @@ class MyCentralManagerDelegate (object):
 					tmp_list = self.p_list[index]
 					self.p_list.insert(index+1,tmp_list[:3] + [s.uuid,s.primary,'','','',''])
 			'''
-						
+
 	def did_write_value(self, c, error):
 		# The temperature sensor has been activated (see did_discover_characteristic)
 		pass
@@ -100,15 +112,14 @@ class MyCentralManagerDelegate (object):
 
 delegate = MyCentralManagerDelegate()
 print('Scanning for peripherals...')
-cb.set_verbose(False)
+cb.set_verbose(True)
 cb.set_central_delegate(delegate)
 cb.scan_for_peripherals()
-
 
 # Keep the connection alive until the 'Stop' button is pressed:
 try:
 	while True: pass
-			
+
 except KeyboardInterrupt:
 	# Disconnect everything:
 	cb.reset()
