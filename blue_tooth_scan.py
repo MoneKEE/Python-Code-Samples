@@ -20,7 +20,7 @@ class MyCentralManagerDelegate (object):
 		clear()
 
 	def did_update_state(self):
-		pass
+		print('*** Peripheral %s state updated: %s' % (self.peripheral.name, self.peripheral.state))
 
 	def did_discover_peripheral(self, p):
 		p_uuids = [item[1] for item in self.p_list[1:]]
@@ -29,7 +29,7 @@ class MyCentralManagerDelegate (object):
 			print('+++ Discovered peripheral: %s (%s)' % (p.name, p.uuid))
 			self.p_list.append([p.name,p.uuid,'','','','','','',''])
 			#self.print_list(self.p_list)
-		#if p.name == p.name:	
+		if p.name and '1109' in p.name:	
 			self.peripheral = p
 			cb.connect_peripheral(self.peripheral)
 
@@ -83,13 +83,9 @@ class MyCentralManagerDelegate (object):
 		print('*** %s characteristics:' % s.uuid)
 		for c in s.characteristics:
 
-		#self.peripheral.read_characteristic_value(c)
-			#self.peripheral.set_notify_value(c, True)
+			self.peripheral.read_characteristic_value(c)
+			self.peripheral.set_notify_value(c, True)
 			print('*** 	characteristic id: %s / value: %s / notifying: %s / properties: %s' % (c.uuid, c.value, c.notifying, c.properties))
-
-			if c.notifying == False:
-				#p.set_notify_value(c,flag=True)
-				print('notifying: %s ' % (c.notifying))
 
 			'''
 			if c.uuid not in [item[5] for item in self.p_list if item[3] == s.uuid]:			
@@ -104,15 +100,14 @@ class MyCentralManagerDelegate (object):
 			'''
 
 	def did_write_value(self, c, error):
-		# The temperature sensor has been activated (see did_discover_characteristic)
 		pass
 
 	def did_update_value(self, c, error):
-		print('*** %s value: %s' % (c.uuid, c.value))
+		print('*** %s updated value: %s' % (c.uuid, c.value.encode('hex')))
 
 delegate = MyCentralManagerDelegate()
 print('Scanning for peripherals...')
-cb.set_verbose(True)
+cb.set_verbose(False)
 cb.set_central_delegate(delegate)
 cb.scan_for_peripherals()
 
