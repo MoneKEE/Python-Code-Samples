@@ -46,13 +46,12 @@ from sklearn.metrics.pairwise import cosine_similarity
 import warnings
 warnings.filterwarnings('ignore')
 
-os.chdir('C:\\Users\\mwill\\AppData\\Roaming\\nltk_data\\corpora\\state_union')
+os.chdir('C:\\Users\\MichaelGore\\Documents\\')
 
 nltk.download('popular', quiet=True)
 
-f=open('2006-GWBush.txt','r',errors='ignore')
-raw=f.read()
-raw=raw.lower()
+f=open('chatbot.txt','r',errors='ignore')
+raw=f.read().lower()
 
 sent_tokens=nltk.sent_tokenize(raw)
 word_tokens=nltk.word_tokenize(raw)
@@ -60,10 +59,11 @@ word_tokens=nltk.word_tokenize(raw)
 lemmer=nltk.stem.WordNetLemmatizer()
 #WordNet is a semantically-oriented dictionary of English included in NLTK.
 
-stop_words = nltk.corpus.stopwords.words('english')
+#stop_words = nltk.corpus.stopwords.words('english')
 
 def LemTokens(tokens):
-    return [lemmer.lemmatize(token) for token in tokens if not token in stop_words]
+    #return [lemmer.lemmatize(token) for token in tokens if not token in stop_words]
+    return [lemmer.lemmatize(token) for token in tokens]
 
 remove_punct_dict=dict((ord(punct), None) for punct in string.punctuation)
 
@@ -84,7 +84,7 @@ def response(user_response):
     robo_response=''
     sent_tokens.append(user_response)
 
-    TfidfVec=TfidfVectorizer(tokenizer=LemNormalize,stop_words=stop_words)
+    TfidfVec=TfidfVectorizer(tokenizer=LemNormalize, stop_words='english')
     tfidf=TfidfVec.fit_transform(sent_tokens)
     vals=cosine_similarity(tfidf[-1], tfidf)
     idx=vals.argsort()[0][-2]
