@@ -51,8 +51,8 @@ l1_delta -> This is the l1 error of the network scaled by the confidence.  Almos
 		with the l1_error except that confident errors are muted
 """
 
-from __future__ import absolute_import
-from __future__ import print_function
+
+
 import numpy as np
 from six.moves import range
 
